@@ -85,13 +85,17 @@
                 ["!!\'false\' == !!\'true\' = ",["true","false","Error","null"],0,"Non-empty strings count as true"],
                 ["0 == [] = ",["true","false","Error","null"],0,"[] = 0"],
                 ["\'0\' == [] = ",["true","false","Error","null"],1,"[] = \'\'"],
-                ["({} + {}) = ",["\'[object Object][object Object]\'","[object Object]","\'[object Object]\'","0"],0,"Once again, {} is an object here"],
-                ["([] + {}) = ",["\'[object Object][object Object]\'","[object Object]","\'[object Object]\'","0"],2,"Once again, [] is \'\' here"],
-                ["({} + []) = ",["\'[object Object][object Object]\'","[object Object]","\'[object Object]\'","0"],3,"This is parsed as a code block, so {} is a scope here"],
+                ["{} + {} = ",["\'[object Object][object Object]\'","[object Object]","\'[object Object]\'","0"],0,"Once again, {} is an object here"],
                 ["{} == {} = ",["true","false","Error","null"],1,"The first {} is interpeted as a scope, the second {} is an object"],
                 ["\'\\t\\r\\n \' == 0 = ",["true","false","Error","null"],0,"These are all whitespace, so it turns into \'\'"],
                 ["Number(\'  \\n\\t\') == 0 = ",["true","false","Error","null"],0,"Same thing as before"],
                 ["parseInt('08') = ",["0","8","\'0\'","\'8\'"],1,"This used to be 0 in older browsers!"],
+                ["new Date() = ",[Date(),"\'" + Date() + "\'",Date(0),"\'" + Date(0) + "\'"],0,"Works as expected"],
+                ["Date() = ",[Date(),"\'" + Date() + "\'",Date(0),"\'" + Date(0) + "\'"],1,"Wait wha-"],
+                ["new Date() + 0 = ",[Date(),"\'" + Date() + "0\'",Date(0),"\'" + Date(0) + "0\'"],1,"+ acts like string concatenation here"],
+                ["new Date() - 0 = ",[Date(),"\'" + Date() + "\'",new Date()-0,"\'" + (new Date()-0) + "\'"],2,"Returns number of milliseconds since epoch"],
+                ["new Date() == new Date() = ",["true","false","Error","null"],1,"Different objects"],
+                ["+Date() = ",[Date(),"\'" + Date() + "\'",new Date()-0,"\'" + (new Date()-0) + "\'"],2,"Same thing with new Date() - 0"],
             ]
             const innercode = `
             <button class="start" onclick="select(1)" id="selectbutton1">
@@ -115,7 +119,7 @@
                 let text = document.getElementById("maintext").innerHTML;
                 for (let i = text.length; i >= 3; i--) {
                     document.getElementById("maintext").innerHTML = text.slice(0, i);
-                    await wait(50)
+                    await wait(i-text.length+50)
                 }
                 document.getElementById("maintext").innerHTML = "..."
                 await wait(500)
@@ -154,11 +158,11 @@
                         document.getElementById("maintext").innerHTML += `<span style=\"color: red\">${qq[1][qq[2]]}<br>Incorrect<br><span style=\"font-size: 50%\">${qq[3]}</span></span>`
                     }
                     await wait(5000)
-                    document.getElementById("maintext").innerHTML = "Q" + (q+1) + "/" + questions.length + ":<br>" + qq[0]
+                    document.getElementById("maintext").innerHTML = "Q" + (q+1) + "/" + questions.length + ":<br>" + qq[0] + qq[1][qq[2]]
                     let text = document.getElementById("maintext").innerHTML;
                     for (let i = text.length; i >= 3; i--) {
                         document.getElementById("maintext").innerHTML = text.slice(0, i);
-                        await wait(50)
+                        await wait(i-text.length+50)
                     }
                     document.getElementById("maintext").innerHTML = "..."
                     await wait(500)
