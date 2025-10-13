@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background: linear-gradient(to top, #000000, #000000, #333333, #333333);
+                background-size: cover;
+                background-size: 100% 1px;
+            }
+            .fill {
+                display: flex;
+                height: 50vh;
+                justify-content: center;
+                align-items: center;
+            }
+            .code {
+                display: block;
+                background: black;
+                padding-left: 30px;
+                padding-right: 30px;
+                border-radius: 30px 30px;
+            }
+            .start {
+                display: block;
+                background: black;
+                padding: 30px;
+                border-radius: 30px 30px;
+                color: white;
+                font-family: 'Courier New', Courier, monospace;
+                text-shadow: white 0px 0px 5px;
+                font-size: 50px;
+                border: 0px;
+            }
+            .start:hover {
+                display: block;
+                background: linear-gradient(45deg,rgba(242, 255, 0, 1) 0%, rgba(0, 255, 204, 1) 50%, rgba(0, 8, 255, 1) 100%);
+                padding: 30px;
+                border-radius: 30px 30px;
+                color: black;
+                font-family: 'Courier New', Courier, monospace;
+                text-shadow: white 0px 0px 5px;
+                font-size: 50px;
+                border: 0px;
+            }
+            .uppies span {
+                display: inline-block;
+                animation: uppies 1s ease-in-out infinite;
+            }
+            .uppies span:nth-child(1) { animation-delay: -1s; }
+            .uppies span:nth-child(2) { animation-delay: -0.9s; }
+            .uppies span:nth-child(3) { animation-delay: -0.8s; }
+            .uppies span:nth-child(4) { animation-delay: -0.7s; }
+            .uppies span:nth-child(5) { animation-delay: -0.6s; }
+            @keyframes uppies {
+                0%, 100% {transform: translateY(5px);}
+                50% {transform: translateY(-5px);}
+            }
+            .code h1 {
+                font-family: 'Courier New', Courier, monospace;
+                text-align: center;
+                color: white;
+                text-shadow: white 0px 0px 5px;
+                font-size: 50px;
+            }
+        </style>
+        <script>
+            function wait(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            const questions = [
+                ["[] + 1 = ",["0","1","null","\'1\'"],3,"[] gets coerced to an empty string, so the result is \'\' + 1"],
+                ["[] + {} = ",["null","\'\'","\'[object Object]\'","\'{}\'"],2,"{} is an object here"],
+                ["{} + [] = ",["[object Object]","1","0","\'[object Object]\'"],2,"{} is interpeted as a scope here"],
+                ["true + true = ",["true","2","1","\'truetrue\'"],1,"true = 1"],
+                ["[] == ![] = ",["true","false","Error","null"],0,"![] = false, [] = 0, false = 0"],
+                ["NaN == NaN = ",["true","false","Error","null"],1,"NaN does never equal itself"],
+                ["null == undefined = ",["true","false","Error","null"],0,"Special rule"],
+                ["typeof null = ",["\'number\'","\'null\'","\'object\'","Error"],2,"Old bug from the 90s"],
+                ["[1,2,3] + [4,5,6] = ",["\'[1,2,3][4,5,6]\'","[1,2,3,4,5,6]","\'[1,2,3,4,5,6]\'","\'1,2,34,5,6\'"],3,"Arrays are strings when concatenated"],
+                ["+[] = ",["\'0\'","0","\'1\'","1"],1,"[] turns into Number(\"\")"],
+                ["+!![] = ",["\'0\'","0","\'1\'","1"],3,"!![] turns into Number(true)"],
+                ["1 < 2 < 3 = ",["true","false","Error","null"],0,"(1 < 2) = true, true < 3 = true"],
+                ["3 > 2 > 1 = ",["true","false","Error","null"],1,"(3 > 2) = true, true > 1 = false"],
+                ["\'b\' + \'a\' + +\'a\' + \'a\' = ",["\'baaa\'","\'baNaNa\'","Error","null"],1,"+\'a\' = NaN"],
+                ["!!\'false\' == !!\'true\' = ",["true","false","Error","null"],0,"Non-empty strings count as true"],
+                ["0 == [] = ",["true","false","Error","null"],0,"[] = 0"],
+                ["\'0\' == [] = ",["true","false","Error","null"],1,"[] = \'\'"],
+                ["({} + {}) = ",["\'[object Object][object Object]\'","[object Object]","\'[object Object]\'","0"],0,"Once again, {} is an object here"],
+                ["([] + {}) = ",["\'[object Object][object Object]\'","[object Object]","\'[object Object]\'","0"],2,"Once again, [] is \'\' here"],
+                ["({} + []) = ",["\'[object Object][object Object]\'","[object Object]","\'[object Object]\'","0"],3,"This is parsed as a code block, so {} is a scope here"],
+                ["{} == {} = ",["true","false","Error","null"],1,"The first {} is interpeted as a scope, the second {} is an object"],
+                ["\'\\t\\r\\n \' == 0 = ",["true","false","Error","null"],0,"These are all whitespace, so it turns into \'\'"],
+                ["Number(\'  \\n\\t\') == 0 = ",["true","false","Error","null"],0,"Same thing as before"],
+                ["parseInt('08') = ",["0","8","\'0\'","\'8\'"],1,"This used to be 0 in older browsers!"],
+            ]
+            const innercode = `
+            <button class="start" onclick="select(1)" id="selectbutton1">
+                    w
+            </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="start" onclick="select(2)" id="selectbutton2">
+                    w
+            </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="start" onclick="select(3)" id="selectbutton3">
+                    w
+            </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="start" onclick="select(4)" id="selectbutton4">
+                    w
+            </button>`
+            let q = -1
+            let total = 0
+            let canpress = true
+            async function onStart() {
+                document.getElementById("input").innerHTML = ""
+                document.getElementById("maintext").innerHTML = "JavaScript, you're drunk!"
+                let text = document.getElementById("maintext").innerHTML;
+                for (let i = text.length; i >= 3; i--) {
+                    document.getElementById("maintext").innerHTML = text.slice(0, i);
+                    await wait(50)
+                }
+                document.getElementById("maintext").innerHTML = "..."
+                await wait(500)
+                nextQ()
+            }
+            async function nextQ() {
+                q++
+                if (q == questions.length) {
+                    document.getElementById("input").innerHTML = innercode
+                    document.getElementById("maintext").innerHTML = "You made it to the end! Your score:<br><span style=\"font-size=200%\">" + total + "/" + questions.length + "</span>"
+                    document.getElementById("selectbutton1").innerHTML = "Thanks"
+                    document.getElementById("selectbutton2").innerHTML = "for"
+                    document.getElementById("selectbutton3").innerHTML = "play"
+                    document.getElementById("selectbutton4").innerHTML = "ing"
+                } else {
+                    document.getElementById("input").innerHTML = innercode
+                    let qq = questions[q]
+                    document.getElementById("maintext").innerHTML = "<span class=\'uppies\'><span>Q</span><span>" + (q+1) + "</span><span>/</span><span>" + questions.length + "</span><span>:</span></span><br>" + qq[0]
+                    document.getElementById("selectbutton1").innerHTML = qq[1][0]
+                    document.getElementById("selectbutton2").innerHTML = qq[1][1]
+                    document.getElementById("selectbutton3").innerHTML = qq[1][2]
+                    document.getElementById("selectbutton4").innerHTML = qq[1][3]
+                }
+            }
+            async function select(id) {
+                if (canpress) {
+                    let qq = questions[q]
+                    canpress = false
+                    if (qq[2] == (id-1)) {
+                        document.getElementById("selectbutton" + id).style = "background: green"
+                        document.getElementById("maintext").innerHTML += `<span style=\"color: lime\">${qq[1][id-1]}<br>Correct!<br><span style=\"font-size: 50%\">${qq[3]}</span></span>`
+                        total++
+                    } else {
+                        document.getElementById("selectbutton" + id).style = "background: maroon"
+                        document.getElementById("selectbutton" + (qq[2]+1)).style = "background: green"
+                        document.getElementById("maintext").innerHTML += `<span style=\"color: red\">${qq[1][qq[2]]}<br>Incorrect<br><span style=\"font-size: 50%\">${qq[3]}</span></span>`
+                    }
+                    await wait(5000)
+                    document.getElementById("maintext").innerHTML = "Q" + (q+1) + "/" + questions.length + ":<br>" + qq[0]
+                    let text = document.getElementById("maintext").innerHTML;
+                    for (let i = text.length; i >= 3; i--) {
+                        document.getElementById("maintext").innerHTML = text.slice(0, i);
+                        await wait(50)
+                    }
+                    document.getElementById("maintext").innerHTML = "..."
+                    await wait(500)
+                    canpress = true
+                    nextQ()
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="fill">
+            <div class="code">
+                <h1 id="maintext">JavaScript, you're 
+                    <i class="uppies">
+                        <span>d</span><span>r</span><span>u</span><span>n</span><span>k</span></i>!
+                    <br><small><small>A quiz about JS weirdness</small></small>
+                </h1>
+            </div>
+        </div>
+        <div class="fill" id="input">
+            <button class="start" onclick="onStart()" id="startbutton">
+                start();
+            </button>
+        </div>
+    </body>
+</html>
