@@ -24,7 +24,7 @@
             .start {
                 display: block;
                 background: black;
-                padding: 30px;
+                padding: 20px;
                 border-radius: 30px 30px;
                 color: white;
                 font-family: 'Courier New', Courier, monospace;
@@ -35,7 +35,7 @@
             .start:hover {
                 display: block;
                 background: linear-gradient(45deg,rgba(242, 255, 0, 1) 0%, rgba(0, 255, 204, 1) 50%, rgba(0, 8, 255, 1) 100%);
-                padding: 30px;
+                padding: 20px;
                 border-radius: 30px 30px;
                 color: black;
                 font-family: 'Courier New', Courier, monospace;
@@ -91,12 +91,12 @@
                 ["\'\\t\\r\\n \' == 0 = ",["true","false","Error","null"],0,"These are all whitespace, so it turns into \'\'"],
                 ["Number(\'  \\n\\t\') == 0 = ",["true","false","Error","null"],0,"Same thing as before"],
                 ["parseInt('08') = ",["0","8","\'0\'","\'8\'"],1,"This used to be 0 in older browsers!"],
-                ["new Date() = ",[Date(),"\'" + Date() + "\'",Date(0),"\'" + Date(0) + "\'"],0,"Works as expected"],
-                ["Date() = ",[Date(),"\'" + Date() + "\'",Date(0),"\'" + Date(0) + "\'"],1,"Wait wha-"],
-                ["new Date() + 0 = ",[Date(),"\'" + Date() + "0\'",Date(0),"\'" + Date(0) + "0\'"],1,"+ acts like string concatenation here"],
-                ["new Date() - 0 = ",[Date(),"\'" + Date() + "\'",new Date()-0,"\'" + (new Date()-0) + "\'"],2,"Returns number of milliseconds since epoch"],
-                ["new Date() == new Date() = ",["true","false","Error","null"],1,"Different objects"],
-                ["+Date() = ",[Date(),"\'" + Date() + "\'",new Date()-0,"\'" + (new Date()-0) + "\'"],2,"Same thing with new Date() - 0"],
+                ["let var = 2",["undefined","0","2","Error"],3,"This is expected, right?"],
+                ["var let = 2",["undefined","0","2","Error"],2,"Yes, you can redefine \"let\". But only \"let\""],
+                ["[,]",["[]","[ <1 empty slot> ]","[undefined]","[undefined,undefined]"],1,"There is just an empty spot"],
+                ["[,][0]",["null","undefined","empty","Error"],1,"...Sure, I guess?"],
+                ["\'1.1\' - 1",["\'1.11\'","\'0.10000000000000009\'","1.11","0.10000000000000009"],3,"\'1.1\' gets converted to 1.1"],
+                ["\'1.1\' + 1",["\'1.11\'","\'2.1\'","1.11","2.1"],0,"String concatenation; 1 gets converted to \'1\'"],
             ]
             const innercode = `
             <button class="start" onclick="select(1)" id="selectbutton1">
