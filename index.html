@@ -93,10 +93,10 @@
                 ["parseInt('08') = ",["0","8","\'0\'","\'8\'"],1,"This used to be 0 in older browsers!"],
                 ["let var = 2",["undefined","0","2","Error"],3,"This is expected, right?"],
                 ["var let = 2",["undefined","0","2","Error"],2,"Yes, you can redefine \"let\". But only \"let\""],
-                ["[,]",["[]","[ <1 empty slot> ]","[undefined]","[undefined,undefined]"],1,"There is just an empty spot"],
-                ["[,][0]",["null","undefined","empty","Error"],1,"...Sure, I guess?"],
-                ["\'1.1\' - 1",["\'1.11\'","\'0.10000000000000009\'","1.11","0.10000000000000009"],3,"\'1.1\' gets converted to 1.1"],
-                ["\'1.1\' + 1",["\'1.11\'","\'2.1\'","1.11","2.1"],0,"String concatenation; 1 gets converted to \'1\'"],
+                ["[,] = ",["[]","[ <1 empty slot> ]","[undefined]","[undefined,undefined]"],1,"There is just an empty spot"],
+                ["[,][0] = ",["null","undefined","empty","Error"],1,"...Sure, I guess?"],
+                ["\'1.1\' - 1",["\'1.11\'","\'0.10000000000000009\' = ","1.11","0.10000000000000009"],3,"\'1.1\' gets converted to 1.1"],
+                ["\'1.1\' + 1 = ",["\'1.11\'","\'2.1\'","1.11","2.1"],0,"String concatenation; 1 gets converted to \'1\'"],
             ]
             const innercode = `
             <button class="start" onclick="select(1)" id="selectbutton1">
